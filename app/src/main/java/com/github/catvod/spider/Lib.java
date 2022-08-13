@@ -450,7 +450,7 @@ public class Lib extends Spider {
     @Override
     public String searchContent(String key, boolean quick) {
         try {
-            String url = "https://shitu.paodekuaiweixinqun.com/search?q=site%3Alibvio.me%2Fdetail+" + URLEncoder.encode(key);
+            String url = "https://google.1qi777.com/search?q=site%3Alibvio.me%2Fdetail+" + URLEncoder.encode(key);
             Document docs = Jsoup.parse(OkHttpUtil.string(url, sHeaders()));
             JSONObject result = new JSONObject();
             JSONArray videos = new JSONArray();

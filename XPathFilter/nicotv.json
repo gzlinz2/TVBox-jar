@@ -1,0 +1,213 @@
+{
+
+
+"ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36",
+"homeUrl": "http://www.nicotv.me/video/type3/------addtime.html",
+"cateManual": {
+ "日本":"日本",
+ "大陆":"大陆",
+ "欧美":"欧美"
+ },
+ 
+                                     
+"homeVodNode":"//ul[contains(@class,'list-unstyled vod-item-img')]/li/p/a",
+"homeVodName":"/img/@alt",
+"homeVodId": "/@href",
+"homeVodIdR": "/video/detail/(\\S+).html",
+"homeVodImg": "/img/@data-original",
+"homeVodImgR": "\\S+(http\\S+)",
+"homeVodMark": "/span/text()",
+
+
+"cateUrl": "http://www.nicotv.me/video/type3/{class}-{cateId}-{year}----addtime-{catePg}.html",
+
+"cateVodNode": "//ul[contains(@class,'list-unstyled vod-item-img')]/li/p/a",
+"cateVodName": "/img/@alt",
+"cateVodId": "/@href",
+"cateVodIdR": "/video/detail/(\\S+).html",
+"cateVodImg": "/img/@data-original",
+"cateVodImgR": "\\S+(http\\S+)",
+"cateVodMark": "/span/text()",
+
+
+"dtUrl": "http://www.nicotv.me/video/detail/{vid}.html",
+
+
+
+"dtNode": "//body",
+"dtName": "substring-before(//div[contains(@class,'media-left')]/a/img/@alt,'免费观看')",
+"dtImg":  "//div[contains(@class,'media-left')]/a/img/@data-original",
+"dtImgR": "\\S+(http\\S+)",
+
+
+
+
+"dtFromNode": "//ul[contains(@class,'nav nav-tabs')]/li/a",
+"dtFromName": "/text()",
+
+
+"dtUrlNode": "//div[contains(@class,'tab-content')]/ul",
+//"dtUrlNode": "//div[contains(@class,'tab-content')]/ul[contains(@class,'list-unstyled row')]",
+//"dtUrlSubNode": "//li[contains(@class,'col-md-2 col-xs-4')]/a",
+"dtUrlSubNode": "//li/a",
+"dtUrlId": "/@href",
+"dtUrlIdR": "/video/play/(\\S+).html",
+"dtUrlName": "/text()",
+
+"playUrl":"http://www.nicotv.me/video/play/{playUrl}.html",
+"playUa": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36",
+
+
+             
+"searchUrl":"http://www.nicotv.me/video/search/{wd}.html", 
+"scVodNode": "//ul[contains(@class,'list-unstyled vod-item-img')]/li/p/a",
+"scVodName": "/img/@alt",
+"scVodId": "/@href",
+"scVodIdR": "/video/detail/(\\S+).html",
+"scVodImg": "/img/@data-original",
+"scVodMark": "/span/text()",
+
+
+"filter": {
+      
+      "日本": [
+        {
+          "key": "class",
+          "name": "类型",
+          "value": [
+            {"n": "全部","v": ""},
+            {"n": "热血","v": "热血"},
+            {"n": "恋爱","v": "恋爱"},
+            {"n": "科幻","v": "科幻"},
+            {"n": "奇幻","v": "奇幻"},
+            {"n": "百合","v": "百合"},
+            {"n": "后宫","v": "后宫"},
+            {"n": "励志","v": "励志"},
+            {"n": "搞笑","v": "搞笑"},
+            {"n": "冒险","v": "冒险"},
+            {"n": "校园","v": "校园"},
+            {"n": "战斗","v": "战斗"},
+            {"n": "机战","v": "机战"},
+            {"n": "运动","v": "运动"},
+            {"n": "战争","v": "战争"},
+            {"n": "萝莉","v": "萝莉"}
+            ]
+        },
+        {
+          "key": "year",
+          "name": "年代",
+          "value": [
+            {"n": "全部","v": ""},
+            {"n": "2022","v": "2022"},
+            {"n": "2021","v": "2021"},
+            {"n": "2020","v": "2020"},
+            {"n": "2019","v": "2019"},
+            {"n": "2018","v": "2018"},
+            {"n": "2017","v": "2017"},
+            {"n": "2016","v": "2016"},
+            {"n": "2015","v": "2015"},
+            {"n": "2014","v": "2014"},
+            {"n": "2013","v": "2013"},
+            {"n": "2012","v": "2012"},
+            {"n": "更早","v": "更早"}
+            ]
+        }
+       
+        ],
+        
+      "大陆": [
+        {
+          "key": "class",
+          "name": "类型",
+          "value": [
+            {"n": "全部","v": ""},
+            {"n": "热血","v": "热血"},
+            {"n": "恋爱","v": "恋爱"},
+            {"n": "科幻","v": "科幻"},
+            {"n": "奇幻","v": "奇幻"},
+            {"n": "百合","v": "百合"},
+            {"n": "后宫","v": "后宫"},
+            {"n": "励志","v": "励志"},
+            {"n": "搞笑","v": "搞笑"},
+            {"n": "冒险","v": "冒险"},
+            {"n": "校园","v": "校园"},
+            {"n": "战斗","v": "战斗"},
+            {"n": "机战","v": "机战"},
+            {"n": "运动","v": "运动"},
+            {"n": "战争","v": "战争"},
+            {"n": "萝莉","v": "萝莉"}
+            ]
+        },
+        {
+          "key": "year",
+          "name": "年代",
+          "value": [
+            {"n": "全部","v": ""},
+            {"n": "2022","v": "2022"},
+            {"n": "2021","v": "2021"},
+            {"n": "2020","v": "2020"},
+            {"n": "2019","v": "2019"},
+            {"n": "2018","v": "2018"},
+            {"n": "2017","v": "2017"},
+            {"n": "2016","v": "2016"},
+            {"n": "2015","v": "2015"},
+            {"n": "2014","v": "2014"},
+            {"n": "2013","v": "2013"},
+            {"n": "2012","v": "2012"},
+            {"n": "更早","v": "更早"}
+            ]
+        }
+       
+        ],  
+        
+      "欧美": [
+        {
+          "key": "class",
+          "name": "类型",
+          "value": [
+            {"n": "全部","v": ""},
+            {"n": "热血","v": "热血"},
+            {"n": "恋爱","v": "恋爱"},
+            {"n": "科幻","v": "科幻"},
+            {"n": "奇幻","v": "奇幻"},
+            {"n": "百合","v": "百合"},
+            {"n": "后宫","v": "后宫"},
+            {"n": "励志","v": "励志"},
+            {"n": "搞笑","v": "搞笑"},
+            {"n": "冒险","v": "冒险"},
+            {"n": "校园","v": "校园"},
+            {"n": "战斗","v": "战斗"},
+            {"n": "机战","v": "机战"},
+            {"n": "运动","v": "运动"},
+            {"n": "战争","v": "战争"},
+            {"n": "萝莉","v": "萝莉"}
+            ]
+        },
+        {
+          "key": "year",
+          "name": "年代",
+          "value": [
+            {"n": "全部","v": ""},
+            {"n": "2022","v": "2022"},
+            {"n": "2021","v": "2021"},
+            {"n": "2020","v": "2020"},
+            {"n": "2019","v": "2019"},
+            {"n": "2018","v": "2018"},
+            {"n": "2017","v": "2017"},
+            {"n": "2016","v": "2016"},
+            {"n": "2015","v": "2015"},
+            {"n": "2014","v": "2014"},
+            {"n": "2013","v": "2013"},
+            {"n": "2012","v": "2012"},
+            {"n": "更早","v": "更早"}
+            ]
+        }
+        
+        ]  
+        
+       
+    }
+
+
+
+}

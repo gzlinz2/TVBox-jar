@@ -1,14 +1,11 @@
-// 分类++
 {
-  "name": "九州影视",
-  "url": "http://www.unss.net/",
-  "tihuan": "cnzz.com",
-  "User": "空",
+  "name": "chok8电影",
+  "url": "https://www.chok8.com/",
   "shouye": "1",
 
-  //"fenlei": "电视剧$/index.php/vod/show/id/2#电影$/index.php/vod/show/id/1#综艺$/index.php/vod/show/id/3#动漫$/index.php/vod/show/id/4",
-  "fenlei": "电影$/index.php/vod/show/id/1/page/#电视剧$/index.php/vod/show/id/2/page/#综艺$/index.php/vod/show/id/3/page/#动漫$/index.php/vod/type/id/4/page/#动画片$/index.php/vod/show/id/21/page/#国产剧$/index.php/vod/show/id/13/page/#港台剧$/index.php/vod/show/id/14/page/#日韩剧$/index.php/vod/show/id/15/page/#欧美剧$/index.php/vod/show/id/16/page/#泰剧$/index.php/vod/show/id/34/page/#国产动漫$/index.php/vod/show/id/26/page/#日本动漫$/index.php/vod/show/id/27/page/#欧美动漫$/index.php/vod/show/id/28/page/#动作片$/index.php/vod/show/id/6/page/#喜剧片$/index.php/vod/show/id/7/page/#爱情片$/index.php/vod/show/id/8/page/#科幻片$/index.php/vod/show/id/9/page/#恐怖片$/index.php/vod/show/id/10/page/#剧情片$/index.php/vod/show/id/11/page/#战争片$/index.php/vod/show/id/12/page/#犯罪片$/index.php/vod/show/id/20/page/",
-  "houzhui": ".html",
+  //"fenlei": "电影$/vodtype/dianying-#电视剧$/vodtype/lianxuju-#国产剧$/vodtype/guochanju-#欧美剧$/vodtype/oumeiju-#科幻片$/vodtype/kehuanpian-#恐怖片$/vodtype/kongbupian-#剧情片$/vodtype/juqingpian-#战争片$/vodtype/zhanzhengpian-#动作片$/vodtype/dongzuopian-#喜剧片$vodtype/xijupian-#爱情片$/vodtype/xijupian-#犯罪片$/vodtype/fanzuipian-#港台剧$/vodtype/gangtaiju-#日韩剧$/vodtype/rihanju-#欧美剧$vodtype/16-#动画片$/vodtype/dongman-#综艺$/vodtype/zongyi-#记录片$/vodtype/jilupian-",
+  "fenlei": "电影$/vodshow/dianying--------#连续剧$/vodshow/lianxuju--------#综艺$/vodshow/zongyi--------#动漫$/vodshow/dongman--------#记录片$/vodshow/jilupian--------#国产剧$/vodshow/guochanju--------#日韩剧$/vodshow/rihanju--------#欧美剧$/vodshow/oumeiju--------#港台剧$/vodshow/gangtaiju--------#动作片$/vodshow/dongzuopian--------#喜剧片$/vodshow/xijupian--------#爱情片$/vodshow/aiqingpian--------#科幻片$/vodshow/kehuanpian--------#恐怖片$/vodshow/kongbupian--------#剧情片$/vodshow/juqingpian--------#战争片$/vodshow/zhanzhengpian--------#犯罪片$/vodshow/fanzuipian--------",
+  "houzhui": "---.html",
 
   "shifouercijiequ": "0",
   "jiequqian": "空",
@@ -26,14 +23,14 @@
   "fubiaotiqian": "text-right\">",
   "fubiaotihou": "</span",
 
-  "sousuohouzhui": "/index.php/vod/detail/id/",
+  "sousuoqian": "/index.php/ajax/suggest?mid=1&wd=",
+  "sousuohou": "&limit=500",
+  "sousuohouzhui": "/voddetail/",
+  "ssmoshi": "0",
+  "sousuoshifouercijiequ": "0",
   "jspic": "pic",
   "jsname": "name",
   "jsid": "id",
-  "sousuoqian": "/index.php/ajax/suggest?mid=1&wd=",
-  "sousuohou": "&limit=500",
-  "ssmoshi": "0",
-  "sousuoshifouercijiequ": "0",
   "ssjiequqian": "空",
   "ssjiequhou": "空",
   "ssjiequshuzuqian": "空",
@@ -48,7 +45,7 @@
   "bfshifouercijiequ": "0",
   "bfjiequqian": "空",
   "bfjiequhou": "空",
-  "bfjiequshuzuqian": "class=\"myui-content__list",
+  "bfjiequshuzuqian": "class=\"stui-content__playlist",
   "bfjiequshuzuhou": "</ul>",
 
   "zhuangtaiqian": "更新：</span>",
@@ -58,7 +55,7 @@
   "zhuyanqian": "主演：</span>",
   "zhuyanhou": "</p>",
   "juqingqian": "简介：</span>",
-  "juqinghou": "<a",
+  "juqinghou": "</span",
 
   "bfyshifouercijiequ": "0",
   "bfyjiequqian": "空",

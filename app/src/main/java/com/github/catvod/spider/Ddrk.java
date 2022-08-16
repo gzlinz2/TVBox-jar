@@ -48,8 +48,8 @@ import okhttp3.ResponseBody;
 
 public class Ddrk extends Spider {
 
-    private static final String siteUrl = "https://ddrk.me";
-    private static final String siteHost = "ddrk.me";
+    private static final String siteUrl = "https://ddys.tv";
+    private static final String siteHost = "ddys.tv";
 
     protected JSONObject filterConfig;
 

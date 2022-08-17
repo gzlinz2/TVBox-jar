@@ -54,7 +54,7 @@ public class Ddrk extends Spider {
     protected JSONObject filterConfig;
 
     protected Pattern regexCategory = Pattern.compile("/category/(\\S+)/");
-    protected Pattern regexVid = Pattern.compile("https://ddrk.me/(\\S+)/");
+    protected Pattern regexVid = Pattern.compile("https://ddys.tv/(\\S+)/");
 
     protected Pattern regexPage = Pattern.compile("\\S+/page/(\\S+)\\S+");
     protected Pattern m = Pattern.compile("\\S+(http\\S+g)");
@@ -72,14 +72,14 @@ public class Ddrk extends Spider {
     protected HashMap<String, String> getHeaders(String url) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.62 Safari/537.36");
-        headers.put("Referer", "https://ddrk.me/");
+        headers.put("Referer", "https://ddys.tv/");
         return headers;
     }
 
     protected static HashMap<String, String> Headers() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36");
-        headers.put("Referer", "https://ddrk.me/");
+        headers.put("Referer", "https://ddys.tv/");
         return headers;
     }
 
@@ -378,8 +378,8 @@ public class Ddrk extends Spider {
                     JSONObject src = Track.getJSONObject(k);
                     String adk = src.getString("src1");
                     String vodName = src.getString("caption");
-                    String playURL = "https://ddrk.me/getvddr/video?id=" + adk + "&type=mix";
-                    String zm = "https://ddrk.me/subddr/" + src.getString("subsrc");
+                    String playURL = "https://ddys.tv/getvddr/video?id=" + adk + "&type=mix";
+                    String zm = "https://ddys.tv/subddr/" + src.getString("subsrc");
                     String pzm = playURL + "|" + zm;
                     vodItems.add(vodName + "$" + pzm);
                 }
@@ -404,8 +404,8 @@ public class Ddrk extends Spider {
                             JSONObject src = Track.getJSONObject(k);
                             String adk = src.getString("src1");
                             String vodName = src.getString("caption");
-                            String playURL = "https://ddrk.me/getvddr/video?id=" + adk + "&type=mix";
-                            String zm = "https://ddrk.me/subddr/" + src.getString("subsrc");
+                            String playURL = "https://ddys.tv/getvddr/video?id=" + adk + "&type=mix";
+                            String zm = "https://ddys.tv/subddr/" + src.getString("subsrc");
                             String pzm = playURL + "|" + zm;
                             vodItems2.add(vodName + "$" + pzm);
                         }

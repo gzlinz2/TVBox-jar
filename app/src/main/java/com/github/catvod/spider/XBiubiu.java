@@ -12,6 +12,7 @@ import com.github.catvod.utils.okhttp.OkHttpUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class XBiubiu extends Spider {
 
     protected HashMap<String, String> getHeaders(String url) {
         HashMap<String, String> headers = new HashMap<>();
-        String ua = getRuleVal("UserW", Misc.UaWinChrome).trim();
+        String ua = getRuleVal("ua", Misc.UaWinChrome).trim();
         if (ua.isEmpty())
             ua = Misc.UaWinChrome;
         headers.put("User-Agent", ua);
@@ -99,8 +100,17 @@ public class XBiubiu extends Spider {
     private JSONObject category(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         try {
             fetchRule();
+            if (tid.equals("空"))
+                tid = "";
+            String qishiye = rule.optString("qishiye", "nil");
+            if (qishiye.equals("空"))
+                pg = "";
+            else if (!qishiye.equals("nil")) {
+                pg = String.valueOf(Integer.parseInt(pg) - 1 + Integer.parseInt(qishiye));
+            }
             String webUrl = getRuleVal("url") + tid + pg + getRuleVal("houzhui");
             String html = fetch(webUrl);
+            html = removeUnicode(html);
             String parseContent = html;
             boolean shifouercijiequ = getRuleVal("shifouercijiequ").equals("1");
             if (shifouercijiequ) {
@@ -113,32 +123,30 @@ public class XBiubiu extends Spider {
             JSONArray videos = new JSONArray();
             ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
             for (int i = 0; i < jiequContents.size(); i++) {
-                //try {
-                String jiequContent = jiequContents.get(i);
-                String title = subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0);
-                String pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
-                pic = Misc.fixUrl(webUrl, pic);
-                String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
-                //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0);
-                //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                String mark = "";
-                if (!getRuleVal("gengxinqian").isEmpty() && !getRuleVal("gengxinhou").isEmpty()) {
-                    try {
-                        mark = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                    } catch (Exception e) {
-                        SpiderDebug.log(e);
+                try {
+                    String jiequContent = jiequContents.get(i);
+                    String title = removeHtml(subContent(jiequContent, getRuleVal("biaotiqian"), getRuleVal("biaotihou")).get(0));
+                    String pic = "";
+                    String tupianqian = getRuleVal("tupianqian").toLowerCase();
+                    if (tupianqian.startsWith("http://") || tupianqian.startsWith("https://")) {
+                        pic = getRuleVal("tupianqian");
+                    } else {
+                        pic = subContent(jiequContent, getRuleVal("tupianqian"), getRuleVal("tupianhou")).get(0);
                     }
+                    pic = Misc.fixUrl(webUrl, pic);
+                    String link = subContent(jiequContent, getRuleVal("lianjieqian"), getRuleVal("lianjiehou")).get(0);
+                    link = getRuleVal("ljqianzhui").isEmpty() ? (link + getRuleVal("ljhouzhui")) : ("x:" + getRuleVal("ljqianzhui")) + link + getRuleVal("ljhouzhui");
+                    String remark = !getRuleVal("fubiaotiqian").isEmpty() && !getRuleVal("fubiaotihou").isEmpty() ?
+                            removeHtml(subContent(jiequContent, getRuleVal("fubiaotiqian"), getRuleVal("fubiaotihou")).get(0)) : "";
+                    JSONObject v = new JSONObject();
+                    v.put("vod_id", title + "$$$" + pic + "$$$" + link);
+                    v.put("vod_name", title);
+                    v.put("vod_pic", pic);
+                    v.put("vod_remarks", remark);
+                    videos.put(v);
+                } catch (Throwable th) {
+                    th.printStackTrace();
                 }
-                JSONObject v = new JSONObject();
-                v.put("vod_id", title + "$$$" + pic + "$$$" + link);
-                v.put("vod_name", title);
-                v.put("vod_pic", pic);
-                v.put("vod_remarks", mark);
-                videos.put(v);
-                //} catch (Throwable th) {
-                //th.printStackTrace();
-                //break;
-                //}
             }
             JSONObject result = new JSONObject();
             result.put("page", pg);
@@ -153,6 +161,22 @@ public class XBiubiu extends Spider {
         return null;
     }
 
+    private static String removeUnicode(String str) {
+        Pattern pattern = Pattern.compile("(\\\\u(\\w{4}))");
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String full = matcher.group(1);
+            String ucode = matcher.group(2);
+            char c = (char) Integer.parseInt(ucode, 16);
+            str = str.replace(full, c + "");
+        }
+        return str;
+    }
+
+    String removeHtml(String text) {
+        return Jsoup.parse(text).text();
+    }
+
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         JSONObject obj = category(tid, pg, filter, extend);
@@ -164,8 +188,8 @@ public class XBiubiu extends Spider {
         try {
             fetchRule();
             String[] idInfo = ids.get(0).split("\\$\\$\\$");
-            String webUrl = getRuleVal("url") + idInfo[2];
-            String html = fetch(webUrl);
+            String webUrl = idInfo[2].startsWith("x:") ? idInfo[2] : getRuleVal("url") + idInfo[2];
+            String html = fetch(webUrl.startsWith("x:") ? webUrl.substring(2) : webUrl);
             String parseContent = html;
             boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
             if (bfshifouercijiequ) {
@@ -175,29 +199,35 @@ public class XBiubiu extends Spider {
             }
 
             ArrayList<String> playList = new ArrayList<>();
-
-            String jiequshuzuqian = getRuleVal("bfjiequshuzuqian");
-            String jiequshuzuhou = getRuleVal("bfjiequshuzuhou");
-            boolean bfyshifouercijiequ = getRuleVal("bfyshifouercijiequ").equals("1");
-            ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
-            for (int i = 0; i < jiequContents.size(); i++) {
-                try {
-                    String jiequContent = jiequContents.get(i);
-                    String parseJqContent = bfyshifouercijiequ ? subContent(jiequContent, getRuleVal("bfyjiequqian"), getRuleVal("bfyjiequhou")).get(0) : jiequContent;
-                    ArrayList<String> lastParseContents = subContent(parseJqContent, getRuleVal("bfyjiequshuzuqian"), getRuleVal("bfyjiequshuzuhou"));
-                    List<String> vodItems = new ArrayList<>();
-                    for (int j = 0; j < lastParseContents.size(); j++) {
-                        String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
-                        String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
-                        vodItems.add(title + "$" + link);
+            boolean playDirect = getRuleVal("直接播放").equals("1");
+            if (!playDirect) {
+                String jiequshuzuqian = getRuleVal("bfjiequshuzuqian");
+                String jiequshuzuhou = getRuleVal("bfjiequshuzuhou");
+                boolean bfyshifouercijiequ = getRuleVal("bfyshifouercijiequ").equals("1");
+                ArrayList<String> jiequContents = subContent(parseContent, jiequshuzuqian, jiequshuzuhou);
+                for (int i = 0; i < jiequContents.size(); i++) {
+                    try {
+                        String jiequContent = jiequContents.get(i);
+                        String parseJqContent = bfyshifouercijiequ ? subContent(jiequContent, getRuleVal("bfyjiequqian"), getRuleVal("bfyjiequhou")).get(0) : jiequContent;
+                        ArrayList<String> lastParseContents = subContent(parseJqContent, getRuleVal("bfyjiequshuzuqian"), getRuleVal("bfyjiequshuzuhou"));
+                        List<String> vodItems = new ArrayList<>();
+                        for (int j = 0; j < lastParseContents.size(); j++) {
+                            String title = subContent(lastParseContents.get(j), getRuleVal("bfbiaotiqian"), getRuleVal("bfbiaotihou")).get(0);
+                            String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
+                            String bfqianzhui = getRuleVal("bfqianzhui");
+                            if (!bfqianzhui.isEmpty()) {
+                                link = webUrl + bfqianzhui + link;
+                            }
+                            vodItems.add(title + "$" + link);
+                        }
+                        playList.add(TextUtils.join("#", vodItems));
+                    } catch (Throwable th) {
+                        th.printStackTrace();
                     }
-                    playList.add(TextUtils.join("#", vodItems));
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                    break;
                 }
+            } else {
+                playList.add(idInfo[0] + "$" + idInfo[2]);
             }
-
             String cover = idInfo[1], title = idInfo[0], area = "";
             String director = "";
             String actor = "";
@@ -248,6 +278,7 @@ public class XBiubiu extends Spider {
                     SpiderDebug.log(e);
                 }
             }
+
             JSONObject vod = new JSONObject();
             vod.put("vod_id", ids.get(0));
             vod.put("vod_name", title);
@@ -282,12 +313,11 @@ public class XBiubiu extends Spider {
         return "";
     }
 
-
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) {
         try {
             fetchRule();
-            String webUrl = getRuleVal("url") + id;
+            String webUrl = id.startsWith("x:") ? id.substring(2) : getRuleVal("url") + id;
             JSONObject result = new JSONObject();
             result.put("parse", 1);
             result.put("playUrl", "");
@@ -318,8 +348,10 @@ public class XBiubiu extends Spider {
                     String id = vod.optString(getRuleVal("jsid")).trim();
                     String pic = vod.optString(getRuleVal("jspic")).trim();
                     pic = Misc.fixUrl(webUrl, pic);
+                    String link = getRuleVal("sousuohouzhui") + id;
+                    link = getRuleVal("ssljqianzhui").isEmpty() ? (link + getRuleVal("ssljhouzhui")) : ("x:" + getRuleVal("ssljqianzhui")) + link + getRuleVal("ssljhouzhui");
                     JSONObject v = new JSONObject();
-                    v.put("vod_id", name + "$$$" + pic + "$$$" + getRuleVal("sousuohouzhui") + id);
+                    v.put("vod_id", name + "$$$" + pic + "$$$" + link);
                     v.put("vod_name", name);
                     v.put("vod_pic", pic);
                     v.put("vod_remarks", "");
@@ -343,6 +375,7 @@ public class XBiubiu extends Spider {
                         String pic = subContent(jiequContent, getRuleVal("sstupianqian"), getRuleVal("sstupianhou")).get(0);
                         pic = Misc.fixUrl(webUrl, pic);
                         String link = subContent(jiequContent, getRuleVal("sslianjieqian"), getRuleVal("sslianjiehou")).get(0);
+                        link = getRuleVal("ssljqianzhui").isEmpty() ? (link + getRuleVal("ssljhouzhui")) : ("x:" + getRuleVal("ssljqianzhui")) + link + getRuleVal("ssljhouzhui");
                         JSONObject v = new JSONObject();
                         v.put("vod_id", title + "$$$" + pic + "$$$" + link);
                         v.put("vod_name", title);
@@ -417,8 +450,12 @@ public class XBiubiu extends Spider {
 
     private ArrayList<String> subContent(String content, String startFlag, String endFlag) {
         ArrayList<String> result = new ArrayList<>();
+        if (startFlag.isEmpty() && endFlag.isEmpty()) {
+            result.add(content);
+            return result;
+        }
         try {
-            Pattern pattern = Pattern.compile(startFlag + "(.*?)" + endFlag);
+            Pattern pattern = Pattern.compile(escapeExprSpecialWord(startFlag) + "(.*?)" + escapeExprSpecialWord(endFlag));
             Matcher matcher = pattern.matcher(content);
             while (matcher.find()) {
                 result.add(matcher.group(1));
@@ -427,5 +464,17 @@ public class XBiubiu extends Spider {
             th.printStackTrace();
         }
         return result;
+    }
+
+    String escapeExprSpecialWord(String regexStr) {
+        if (!regexStr.isEmpty()) {
+            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
+            for (String key : fbsArr) {
+                if (regexStr.contains(key)) {
+                    regexStr = regexStr.replace(key, "\\" + key);
+                }
+            }
+        }
+        return regexStr;
     }
 }

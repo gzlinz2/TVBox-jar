@@ -216,25 +216,21 @@ public class XBiubiu extends Spider {
                             String link = subContent(lastParseContents.get(j), getRuleVal("bflianjieqian"), getRuleVal("bflianjiehou")).get(0);
                             String bfqianzhui = getRuleVal("bfqianzhui");
                             if (!bfqianzhui.isEmpty()) {
-                                link = webUrl + bfqianzhui + link;
+                                link = bfqianzhui + link;
                             }
                             vodItems.add(title + "$" + link);
                         }
                         playList.add(TextUtils.join("#", vodItems));
                     } catch (Throwable th) {
                         th.printStackTrace();
-                    }
+                    }		  
                 }
+
             } else {
-                playList.add(idInfo[0] + "$" + idInfo[2]);
+                playList.add(idInfo[0] + "$" + idInfo[2]);																			  
             }
-            String cover = idInfo[1], title = idInfo[0], area = "";
-            String director = "";
-            String actor = "";
-            String desc = "";
-            String remark = "";
-            String year = "";
-            String category = "";
+		   
+            String cover = idInfo[1], title = idInfo[0], desc = "", category = "", area = "", year = "", remark = "", director = "", actor = "";
 
             if (!getRuleVal("leixinqian").isEmpty() && !getRuleVal("leixinhou").isEmpty()) {
                 try {
@@ -277,8 +273,7 @@ public class XBiubiu extends Spider {
                 } catch (Exception e) {
                     SpiderDebug.log(e);
                 }
-            }
-
+            }			 
             JSONObject vod = new JSONObject();
             vod.put("vod_id", ids.get(0));
             vod.put("vod_name", title);
@@ -290,13 +285,36 @@ public class XBiubiu extends Spider {
             vod.put("vod_actor", actor);
             vod.put("vod_director", director);
             vod.put("vod_content", desc);
-
-            ArrayList<String> playFrom = new ArrayList<>();
-
+	       ArrayList<String> playFrom = new ArrayList<>();
+           String xlparseContent = html;
+           if(getRuleVal("xlbiaotiqian").isEmpty() && getRuleVal("xlbiaotihou").isEmpty()){
+           
             for (int i = 0; i < playList.size(); i++) {
                 playFrom.add("播放列表" + (i + 1));
             }
-
+           }else{
+           
+           boolean xlshifouercijiequ = getRuleVal("xlshifouercijiequ").equals("1");
+            if (xlshifouercijiequ) {
+                String xljiequqian = getRuleVal("xljiequqian");
+                String xljiequhou = getRuleVal("xljiequhou");
+                xlparseContent = subContent(html, xljiequqian, xljiequhou).get(0);
+            }
+            
+            String xljiequshuzuqian = getRuleVal("xljiequshuzuqian");
+            String xljiequshuzuhou = getRuleVal("xljiequshuzuhou");
+            ArrayList<String> xljiequContents = subContent(xlparseContent, xljiequshuzuqian, xljiequshuzuhou);
+            for (int i = 0; i < playList.size(); i++) {
+                try {
+                     String xltitle = subContent(xljiequContents.get(i), getRuleVal("xlbiaotiqian"), getRuleVal("xlbiaotihou")).get(0);                     
+                     playFrom.add(xltitle);
+                } catch (Throwable th) {
+                    th.printStackTrace();
+                    break;
+                }
+            }           
+           
+           }
             String vod_play_from = TextUtils.join("$$$", playFrom);
             String vod_play_url = TextUtils.join("$$$", playList);
             vod.put("vod_play_from", vod_play_from);
@@ -376,11 +394,19 @@ public class XBiubiu extends Spider {
                         pic = Misc.fixUrl(webUrl, pic);
                         String link = subContent(jiequContent, getRuleVal("sslianjieqian"), getRuleVal("sslianjiehou")).get(0);
                         link = getRuleVal("ssljqianzhui").isEmpty() ? (link + getRuleVal("ssljhouzhui")) : ("x:" + getRuleVal("ssljqianzhui")) + link + getRuleVal("ssljhouzhui");
+                        String remark = "";
+                        if (!getRuleVal("ssfubiaotiqian").isEmpty() && !getRuleVal("ssfubiaotihou").isEmpty()) {
+                            try {
+                                remark = subContent(jiequContent, getRuleVal("ssfubiaotiqian"), getRuleVal("ssfubiaotihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
+                            } catch (Exception e) {
+                                SpiderDebug.log(e);
+                            }
+                        }			 
                         JSONObject v = new JSONObject();
                         v.put("vod_id", title + "$$$" + pic + "$$$" + link);
                         v.put("vod_name", title);
                         v.put("vod_pic", pic);
-                        v.put("vod_remarks", "");
+                        v.put("vod_remarks", remark);
                         videos.put(v);
                     } catch (Throwable th) {
                         th.printStackTrace();
@@ -477,4 +503,26 @@ public class XBiubiu extends Spider {
         }
         return regexStr;
     }
+
+    //修复软件不支持的格式无法嗅探的问题
+    @Override 
+        public boolean manualVideoCheck() { 
+            return true; 
+        } 
+     
+        private String[] videoFormatList = new String[]{".m3u8", ".mp4", ".mpeg", ".flv", ".m4a",".mp3",".wma",".wmv"}; 
+     
+        @Override 
+        public boolean isVideoFormat(String url) { 
+            url = url.toLowerCase(); 
+            if (url.contains("=http") || url.contains("=https%3a%2f") || url.contains("=http%3a%2f")) { 
+                return false; 
+            } 
+            for (String format : videoFormatList) { 
+                if (url.contains(format)) { 
+                    return true; 
+                } 
+            } 
+            return false; 
+        }
 }

@@ -53,10 +53,12 @@ public class Proxy extends Spider {
                 ByteArrayInputStream baos = new ByteArrayInputStream("ok".getBytes("UTF-8"));
                 result[2] = baos;
                 return result;
-            } else if (what.equals("push")) {
+            } else if (what.equals("ali")) {
                 return PushAgent.vod(params);
             } else if (what.equals("czspp")) {
                 return Czsapp.loadsub(params.get("url"));
+            } else if (what.equals("kmys")) {
+                return Kmys.vod(params);
             }
 
         } catch (Throwable th) {

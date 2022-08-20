@@ -45,7 +45,7 @@ public class Juhuang extends Spider {
     public void init(Context context) {
         super.init(context);
         try {
-            playerConfig = new JSONObject("{\"xg\":{\"sh\":\"xg²¥·ÅÆ÷\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"dplayer\":{\"sh\":\"dplayer²¥·ÅÆ÷\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"videojs\":{\"sh\":\"videojs-H5²¥·ÅÆ÷\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"iva\":{\"sh\":\"iva-H5²¥·ÅÆ÷\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"iframe\":{\"sh\":\"iframeÍâÁ´Êı¾İ\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"link\":{\"sh\":\"ÍâÁ´Êı¾İ\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"swf\":{\"sh\":\"FlashÎÄ¼ş\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"flv\":{\"sh\":\"FlvÎÄ¼ş\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"plyr\":{\"sh\":\"plyr\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"H5player\":{\"sh\":\"H5player\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"playerjs\":{\"sh\":\"playerjs\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"aliplayer\":{\"sh\":\"°¢Àï²¥·ÅÆ÷\",\"or\":999,\"sn\":0,\"pu\":\"\"}}");
+            playerConfig = new JSONObject("{\"xg\":{\"sh\":\"xgæ’­æ”¾å™¨\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"dplayer\":{\"sh\":\"dplayeræ’­æ”¾å™¨\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"videojs\":{\"sh\":\"videojs-H5æ’­æ”¾å™¨\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"iva\":{\"sh\":\"iva-H5æ’­æ”¾å™¨\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"iframe\":{\"sh\":\"iframeå¤–é“¾æ•°æ®\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"link\":{\"sh\":\"å¤–é“¾æ•°æ®\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"swf\":{\"sh\":\"Flashæ–‡ä»¶\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"flv\":{\"sh\":\"Flvæ–‡ä»¶\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"plyr\":{\"sh\":\"plyr\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"H5player\":{\"sh\":\"H5player\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"playerjs\":{\"sh\":\"playerjs\",\"or\":999,\"sn\":0,\"pu\":\"\"},\"aliplayer\":{\"sh\":\"é˜¿é‡Œæ’­æ”¾å™¨\",\"or\":999,\"sn\":0,\"pu\":\"\"}}");
 
         } catch (JSONException e) {
             SpiderDebug.log(e);
@@ -61,7 +61,7 @@ public class Juhuang extends Spider {
     }
 
     /**
-     * ÅÀ³æheaders
+     * çˆ¬è™«headers
      *
      * @param refererUrl
      * @return
@@ -76,9 +76,9 @@ public class Juhuang extends Spider {
     }
 
     /**
-     * »ñÈ¡·ÖÀàÊı¾İ + Ê×Ò³×î½ü¸üĞÂÊÓÆµÁĞ±íÊı¾İ
+     * è·å–åˆ†ç±»æ•°æ® + é¦–é¡µæœ€è¿‘æ›´æ–°è§†é¢‘åˆ—è¡¨æ•°æ®
      *
-     * @param filter ÊÇ·ñ¿ªÆôÉ¸Ñ¡ ¹ØÁªµÄÊÇ Èí¼şÉèÖÃÖĞ Ê×Ò³Êı¾İÔ´ÀïµÄÉ¸Ñ¡¿ª¹Ø
+     * @param filter æ˜¯å¦å¼€å¯ç­›é€‰ å…³è”çš„æ˜¯ è½¯ä»¶è®¾ç½®ä¸­ é¦–é¡µæ•°æ®æºé‡Œçš„ç­›é€‰å¼€å…³
      * @return
      */
     @Override
@@ -86,23 +86,23 @@ public class Juhuang extends Spider {
         try {
             String url = siteUrl + '/';
             Document doc = Jsoup.parse(OkHttpUtil.string(siteUrl, getHeaders(siteUrl)));
-            // ·ÖÀà½Úµã
+            // åˆ†ç±»èŠ‚ç‚¹
             Elements elements = doc.select("ul.nav-menu-items > li > a");
             JSONArray classes = new JSONArray();
             for (Element ele : elements) {
-                //·ÖÀàÃû
+                //åˆ†ç±»å
                 String name = ele.text();
-                boolean show = name.equals("Youtube¾«Ñ¡") ||
-                        name.equals("µçÓ°") ||
-                        name.equals("¾ç¼¯") ||
-                        name.equals("×ÛÒÕ") ||
-                        name.equals("¶¯Âş") ||
-                        name.equals("¼ÍÂ¼Æ¬");
+                boolean show = name.equals("Youtubeç²¾é€‰") ||
+                        name.equals("ç”µå½±") ||
+                        name.equals("å‰§é›†") ||
+                        name.equals("ç»¼è‰º") ||
+                        name.equals("åŠ¨æ¼«") ||
+                        name.equals("çºªå½•ç‰‡");
                 if (show) {
                     Matcher mather = regexCategory.matcher(ele.attr("href"));
                     if (!mather.find())
                         continue;
-                    // °Ñ·ÖÀàµÄidºÍÃû³ÆÈ¡³öÀ´¼Óµ½ÁĞ±íÀï
+                    // æŠŠåˆ†ç±»çš„idå’Œåç§°å–å‡ºæ¥åŠ åˆ°åˆ—è¡¨é‡Œ
                     String id = mather.group(1).trim();
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("type_id", id);
@@ -116,7 +116,7 @@ public class Juhuang extends Spider {
             }
             result.put("class", classes);
             try {
-                // È¡Ê×Ò³ÍÆ¼öÊÓÆµÁĞ±í
+                // å–é¦–é¡µæ¨èè§†é¢‘åˆ—è¡¨
                 Elements list = doc.select("div.module-items>div");
                 JSONArray videos = new JSONArray();
                 for (int i = 0; i < list.size(); i++) {
@@ -147,12 +147,12 @@ public class Juhuang extends Spider {
     }
 
     /**
-     * »ñÈ¡·ÖÀàĞÅÏ¢Êı¾İ
+     * è·å–åˆ†ç±»ä¿¡æ¯æ•°æ®
      *
-     * @param tid    ·ÖÀàid
-     * @param pg     Ò³Êı
-     * @param filter Í¬homeContent·½·¨ÖĞµÄfilter
-     * @param extend É¸Ñ¡²ÎÊı{k:v, k1:v1}
+     * @param tid    åˆ†ç±»id
+     * @param pg     é¡µæ•°
+     * @param filter åŒhomeContentæ–¹æ³•ä¸­çš„filter
+     * @param extend ç­›é€‰å‚æ•°{k:v, k1:v1}
      * @return
      */
     @Override
@@ -162,7 +162,7 @@ public class Juhuang extends Spider {
             if (pg != null && Integer.parseInt(pg) > 1) {
                 url = siteUrl + String.format("/type/%s_type_%s.html", tid, pg);
             }
-            // »ñÈ¡·ÖÀàÊı¾İµÄurl
+            // è·å–åˆ†ç±»æ•°æ®çš„url
 
             String html = OkHttpUtil.string(url, getHeaders(url));
             Document doc = Jsoup.parse(html);
@@ -170,7 +170,7 @@ public class Juhuang extends Spider {
             int pageCount = 1;
             int page = -1;
 //            int page = Integer.parseInt(doc.select("div.module-footer >div[id=page] > span").text().trim());
-            // È¡Ò³ÂëÏà¹ØĞÅÏ¢
+            // å–é¡µç ç›¸å…³ä¿¡æ¯
             Elements pageInfo = doc.select("div.module-footer >div[id=page] > a");
             if (pageInfo.size() == 0) {
                 page = Integer.parseInt(pg);
@@ -183,7 +183,7 @@ public class Juhuang extends Spider {
                         continue;
                     String name = a.text();
 
-                    if (name.equals("Î²Ò³")) {
+                    if (name.equals("å°¾é¡µ")) {
                         Matcher matcher = regexPage.matcher(a.attr("href"));
                         if (matcher.find()) {
                             pageCount = Integer.parseInt(matcher.group(1));
@@ -194,8 +194,8 @@ public class Juhuang extends Spider {
             }
 
             JSONArray videos = new JSONArray();
-            if (!html.contains("Ã»ÓĞÕÒµ½ÄúÏëÒªµÄ½á¹ûÅ¶")) {
-                // È¡µ±Ç°·ÖÀàÒ³µÄÊÓÆµÁĞ±í
+            if (!html.contains("æ²¡æœ‰æ‰¾åˆ°æ‚¨æƒ³è¦çš„ç»“æœå“¦")) {
+                // å–å½“å‰åˆ†ç±»é¡µçš„è§†é¢‘åˆ—è¡¨
                 Elements list = doc.select("div.module-items>div");
                 for (int i = 0; i < list.size(); i++) {
                     Element vod = list.get(i);
@@ -228,22 +228,22 @@ public class Juhuang extends Spider {
     }
 
     /**
-     * ÊÓÆµÏêÇéĞÅÏ¢
+     * è§†é¢‘è¯¦æƒ…ä¿¡æ¯
      *
-     * @param ids ÊÓÆµid
+     * @param ids è§†é¢‘id
      * @return
      */
     @Override
     public String detailContent(List<String> ids) {
         try {
-            // ÊÓÆµÏêÇéurl
+            // è§†é¢‘è¯¦æƒ…url
             String url = siteUrl + "/vod/" + ids.get(0) + "_vod.html";
             //System.out.println(url);
             Document doc = Jsoup.parse(OkHttpUtil.string(url, getHeaders(url)));
             JSONObject result = new JSONObject();
             JSONObject vodList = new JSONObject();
 
-            // È¡»ù±¾Êı¾İ
+            // å–åŸºæœ¬æ•°æ®
             String cover = doc.selectFirst("div.module-item-pic > img").attr("data-src");
             String title = doc.selectFirst("div.video-info-header > h1.page-title").text();
             String desc = doc.selectFirst("p.zkjj_a").text();
@@ -272,7 +272,7 @@ public class Juhuang extends Spider {
                 }
             });
 
-            // È¡²¥·ÅÁĞ±íÊı¾İ
+            // å–æ’­æ”¾åˆ—è¡¨æ•°æ®
             Elements modules = doc.select("div.module");
 
 
@@ -315,17 +315,17 @@ public class Juhuang extends Spider {
 
 
     /**
-     * »ñÈ¡ÊÓÆµ²¥·ÅĞÅÏ¢
+     * è·å–è§†é¢‘æ’­æ”¾ä¿¡æ¯
      *
-     * @param flag     ²¥·ÅÔ´
-     * @param id       ÊÓÆµid
-     * @param vipFlags ËùÓĞ¿ÉÄÜĞèÒªvip½âÎöµÄÔ´
+     * @param flag     æ’­æ”¾æº
+     * @param id       è§†é¢‘id
+     * @param vipFlags æ‰€æœ‰å¯èƒ½éœ€è¦vipè§£æçš„æº
      * @return
      */
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) {
         try {
-            //¶¨Òå²¥·ÅÓÃµÄheaders
+            //å®šä¹‰æ’­æ”¾ç”¨çš„headers
             JSONObject headers = new JSONObject();
             headers.put("origin", " https://juhuang.tv");
             headers.put("User-Agent", " Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36");
@@ -335,14 +335,14 @@ public class Juhuang extends Spider {
             headers.put("Referer", " https://juhuang.tv/");
 
 
-            // ²¥·ÅÒ³ url
+            // æ’­æ”¾é¡µ url
             String url = siteUrl + "/play/" + id + ".html";
             Document doc = Jsoup.parse(OkHttpUtil.string(url, getHeaders(url)));
             Elements allScript = doc.select("script");
             JSONObject result = new JSONObject();
             for (int i = 0; i < allScript.size(); i++) {
                 String scContent = allScript.get(i).html().trim();
-                if (scContent.startsWith("var player_")) { // È¡Ö±Á´
+                if (scContent.startsWith("var player_")) { // å–ç›´é“¾
                     int start = scContent.indexOf('{');
                     int end = scContent.lastIndexOf('}') + 1;
                     String json = scContent.substring(start, end);

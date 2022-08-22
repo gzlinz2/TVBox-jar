@@ -40,7 +40,6 @@ import okhttp3.Response;
  */
 public class PushAgent extends Spider {
     private static long timeToken = 0;
-    private static long timeExpires = 0;
 
     private static String accessToken = "";
     private static String refreshToken = "";
@@ -50,7 +49,7 @@ public class PushAgent extends Spider {
     private static final Map<String, Map<String, String>> videosMap = new HashMap<>();
     private static final ReentrantLock rLock = new ReentrantLock();
     public static Pattern regexAli = Pattern.compile("(https://www.aliyundrive.com/s/[^\"]+)");
-    //TANGSAN
+      //TANGSAN
     public static Pattern Folder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
     
     public static Pattern regexAliFolder = Pattern.compile("www.aliyundrive.com/s/([^/]+)(/folder/([^/]+))?");
@@ -116,8 +115,7 @@ public class PushAgent extends Spider {
                 json.put("refresh_token", refreshToken);
                 JSONObject response = new JSONObject(postJson("https://api.aliyundrive.com/token/refresh", json.toString(), getHeaders()));
                 accessToken = response.getString("token_type") + " " + response.getString("access_token");
-                timeExpires = response.getLong("expires_in");
-                timeToken += timeSys;
+                timeToken = response.getLong("expires_in") + timeSys;
             } catch (JSONException e) {
                 SpiderDebug.log(e);
             }
@@ -176,11 +174,10 @@ public class PushAgent extends Spider {
             String shareToken = getShareTk(shareId, "");
             ReentrantLock reentrantLock = rLock;
             reentrantLock.lock();
-            Map<String, Map<String, String>> videos = videosMap;
-            String url = videos.get(fileId).get(mediaId);
+            String url = videosMap.get(fileId).get(mediaId);
             if (new Long(new UrlQuerySanitizer(url).getValue("x-oss-expires")) - getTimeSys() <= 60) {
                 getVideoUrl(shareId, shareToken, fileId);
-                url = videos.get(fileId).get(mediaId);
+                url = videosMap.get(fileId).get(mediaId);
             }
             reentrantLock.unlock();
 
@@ -209,16 +206,15 @@ public class PushAgent extends Spider {
         if (type.equals("m3u8")) {
             return File(map);
         }
-        if (!type.equals("media")) {
-            return null;
+        if (type.equals("media")) {
+            return ProxyMedia(map);
         }
-        return ProxyMedia(map);
+        return null;
     }
 
     private static String getVideoUrl(String shareId, String shareToken, String fileId) {
-        String url="";
-        JSONObject jSONObject;
         try {
+            getRefreshTk();
             JSONObject json = new JSONObject();
             json.put("share_id", shareId);
             json.put("category", "live_transcoding");
@@ -247,7 +243,7 @@ public class PushAgent extends Spider {
             }
             Map<String, List<String>> respHeaderMap = new HashMap<>();
             OkHttpUtil.stringNoRedirect(videoUrl, getHeaders(), respHeaderMap);
-            url = OkHttpUtil.getRedirectLocation(respHeaderMap);
+            String url = OkHttpUtil.getRedirectLocation(respHeaderMap);
             String medias = OkHttpUtil.string(url, getHeaders());
             String site = url.substring(0, url.lastIndexOf("/")) + "/";
             ArrayList<String> lists = new ArrayList<>();
@@ -278,6 +274,7 @@ public class PushAgent extends Spider {
 
     private static String getOriginalVideoUrl(String shareId, String shareToken, String fileId, String category) {
         try {
+            getRefreshTk();
             HashMap<String, String> json = getHeaders();
             json.put("x-share-token", shareToken);
             json.put("authorization", accessToken);
@@ -529,7 +526,6 @@ public class PushAgent extends Spider {
                 vodAtom.put("vod_pic", shareLinkJson.getString("avatar"));
                 vodAtom.put("vod_content", url);
                 vodAtom.put("type_name", "阿里云盘");
-                vodAtom.put("vod_play_from", "AliYun$$$AliYun原画");
                 ArrayList<String> vodItems = new ArrayList<>();
                 if (!fileInfo.getString("type").equals("folder")) {
                     if (!fileInfo.getString("type").equals("file") || !fileInfo.getString("category").equals("video")) {
@@ -545,10 +541,13 @@ public class PushAgent extends Spider {
                 for (String item : arrayList2) {
                     vodItems.add(item + "$" + hashMap.get(item));
                 }
-                ArrayList<String> playLists = new ArrayList<>();
-                playLists.add(TextUtils.join("#", vodItems));
-                playLists.add(TextUtils.join("#", vodItems));
-                vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
+                if(vodItems.size()>0){
+					ArrayList<String> playLists = new ArrayList<>();
+					playLists.add(TextUtils.join("#", vodItems));
+					playLists.add(TextUtils.join("#", vodItems));
+					vodAtom.put("vod_play_url", TextUtils.join("$$$", playLists));
+					vodAtom.put("vod_play_from", "AliYun$$$AliYun原画");
+                }
                 JSONObject result = new JSONObject();
                 JSONArray list = new JSONArray();
                 list.put(vodAtom);
@@ -603,7 +602,6 @@ public class PushAgent extends Spider {
                 result.put("url", id);
                 return result.toString();
             }else if (flag.equals("AliYun")) {
-                getRefreshTk();
                 String[] split = id.split("\\+");
                 String videoUrl = Proxy.localProxyUrl() + "?do=ali&type=m3u8&share_id=" + split[0] + "&file_id=" + split[2];
                 JSONObject result = new JSONObject();
@@ -613,7 +611,6 @@ public class PushAgent extends Spider {
                 result.put("header", "");
                 return result.toString();
             }else if (flag.equals("AliYun原画")) {
-                getRefreshTk();
                 String[] split = id.split("\\+");
                 String url = getOriginalVideoUrl(split[0], split[1], split[2], split[3]);
                 Map<String, List<String>> headerMap = new HashMap<>();

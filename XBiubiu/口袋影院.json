@@ -16,11 +16,6 @@
   "biaotihou": "\"",
   "lianjieqian": "href=\"",
   "lianjiehou": "\"",
-
-  //新版Biubiu参数：副标题 (不需要的话，就不填写或者删除副标题2个字段也可以。)
-  "fubiaotiqian": "span>",
-  "fubiaotihou": "</span",
-
   "sousuoqian": "/search-pg-1-wd-",
   "sousuohou": ".html&limit=500",
   "sousuohouzhui": "/detail/",
@@ -39,13 +34,11 @@
   "ssbiaotihou": "\"",
   "sslianjieqian": "href=\"",
   "sslianjiehou": "\"",
-
   "bfshifouercijiequ": "0",
   "bfjiequqian": "空",
   "bfjiequhou": "空",
   "bfjiequshuzuqian": "class=\"list_block show\"",
   "bfjiequshuzuhou": "</ul>",
-
   "zhuangtaiqian": "class=\"yac\">",
   "zhuangtaihou": "</p>",
   "daoyanqian": "导演：</span>",
@@ -54,7 +47,6 @@
   "zhuyanhou": "</p>",
   "juqingqian": "class=\"tbox_js\">",
   "juqinghou": "</div>",
-
   "bfyshifouercijiequ": "0",
   "bfyjiequqian": "空",
   "bfyjiequhou": "空",

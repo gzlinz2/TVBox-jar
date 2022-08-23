@@ -21,11 +21,6 @@
   "lianjieqian": "href=\"", //列表中资源的详情页跳转链接前关键词,截取的关键词有 " 的用 \ 进行转义
   "lianjiehou": "\"", //列表中资源的详情页跳转链接后关键词,截取的关键词有 " 的用 \ 进行转义
 
-  //新版Biubiu参数：副标题 (不需要的话，就不填写或者删除副标题2个字段也可以。)
-  "fubiaotiqian": "item-note\">",
-  "fubiaotihou": "</div>",
-
-
   //搜索部分基本不用动，现在网站基本都是苹果CMS，所有搜索是固定的。
   "sousuoqian": "/index.php/ajax/suggest?mid=1&wd=天使的心跳",
   "sousuohou": "&limit=500",

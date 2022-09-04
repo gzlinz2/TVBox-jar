@@ -16,7 +16,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -194,46 +193,32 @@ public class IKan extends AppYsV2 {
                 headers.put("Accept-Encoding", " gzip, deflate");
                 headers.put("Connection", " Keep-Alive");
 
-//                String parseUrl = "https://player.4kan.top/?url=" + str2;
-                String parseUrl = "http://tvcms.ikan6.vip/api.php/gctvapi.api/Index?url=" + str2;
-
-                Map<String, String> jxheader = new HashMap<>();
-                jxheader.put("User-Agent", " Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36");
-                JSONObject Urljson = new JSONObject(OkHttpUtil.string(parseUrl, jxheader));
-
-                String RealUrl = new String(Base64.decode(Urljson.getString("data"),Base64.DEFAULT));
-                JSONObject result = new JSONObject();
-                result.put("parse", 0);
-                result.put("playUrl", "");
-                result.put("url", RealUrl);
-                result.put("header", "");
-                return result.toString();
-
-//                Document doc = Jsoup.parse(OkHttpUtil.string(parseUrl, null));
-//                Pattern pattern = Pattern.compile("(?<=getrandom\\S\").*?(?=\")");
-//                Elements allScripts = doc.select("body script");
-//                for (int j = 0; j < allScripts.size(); j++) {
-//                    String scContents = allScripts.get(j).html().trim();
-//                    Matcher matcher = pattern.matcher(scContents);
-//                    if (!matcher.find())
-//                        continue;
-//                    String players = new String(Base64.decode(matcher.group(0), Base64.DEFAULT));
-//                    int start = players.indexOf("http");
-//                    int end = players.lastIndexOf("key=") + 36;
-//                    String url = players.substring(start, end);
-//                    Map<String, List<String>> respHeaders = new TreeMap<>();
-//                    OkHttpUtil.stringNoRedirect(url, null, respHeaders);
-//                    String redLoc = OkHttpUtil.getRedirectLocation(respHeaders);
+                String parseUrl = "https://player.4kan.top/?url=" + str2;
+                Document doc = Jsoup.parse(OkHttpUtil.string(parseUrl, null));
+                Pattern pattern = Pattern.compile("(?<=getrandom\\S\").*?(?=\")");
+                Elements allScripts = doc.select("body script");
+                for (int j = 0; j < allScripts.size(); j++) {
+                    String scContents = allScripts.get(j).html().trim();
+                    Matcher matcher = pattern.matcher(scContents);
+                    if (!matcher.find())
+                        continue;
+                    String players = new String(Base64.decode(matcher.group(0), Base64.DEFAULT));
+                    int start = players.indexOf("http");
+                    int end = players.lastIndexOf("key=") + 36;
+                    String url = players.substring(start, end);
+                    Map<String, List<String>> respHeaders = new TreeMap<>();
+                    OkHttpUtil.stringNoRedirect(url, null, respHeaders);
+                    String redLoc = OkHttpUtil.getRedirectLocation(respHeaders);
 
 
-//                JSONObject result = new JSONObject();
-//                result.put("parse", 0);
-//                result.put("playUrl", "");
-//                result.put("url", redLoc);
-//                result.put("header", headers.toString());
-//                return result.toString();
-//            }
+                    JSONObject result = new JSONObject();
+                    result.put("parse", 0);
+                    result.put("playUrl", "");
+                    result.put("url", redLoc);
+                    result.put("header", headers.toString());
+                    return result.toString();
 
+                }
             }
         } catch (Exception e) {
             SpiderDebug.log(e);

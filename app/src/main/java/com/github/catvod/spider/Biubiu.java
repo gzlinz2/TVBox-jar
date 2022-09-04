@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 import okhttp3.Call;
 
-public class XBiubiu extends Spider {
+public class Biubiu extends Spider {
 
     @Override
     public void init(Context context) {
@@ -122,9 +122,9 @@ public class XBiubiu extends Spider {
                 //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0);
                 //String remarks = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
                 String mark = "";
-                if (!getRuleVal("fubiaotiqian").isEmpty() && !getRuleVal("fubiaotihou").isEmpty()) {
+                if (!getRuleVal("gengxinqian").isEmpty() && !getRuleVal("gengxinhou").isEmpty()) {
                     try {
-                        mark = subContent(jiequContent, getRuleVal("fubiaotiqian"), getRuleVal("fubiaotihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
+                        mark = subContent(jiequContent, getRuleVal("gengxinqian"), getRuleVal("gengxinhou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
                     } catch (Exception e) {
                         SpiderDebug.log(e);
                     }
@@ -167,7 +167,6 @@ public class XBiubiu extends Spider {
             String webUrl = getRuleVal("url") + idInfo[2];
             String html = fetch(webUrl);
             String parseContent = html;
-            
             boolean bfshifouercijiequ = getRuleVal("bfshifouercijiequ").equals("1");
             if (bfshifouercijiequ) {
                 String jiequqian = getRuleVal("bfjiequqian");
@@ -198,37 +197,6 @@ public class XBiubiu extends Spider {
                     break;
                 }
             }
-            
-           ArrayList<String> playFrom = new ArrayList<>();
-           String xlparseContent = html;
-           if(getRuleVal("xlbiaotiqian").isEmpty() && getRuleVal("xlbiaotihou").isEmpty()){
-           
-            for (int i = 0; i < playList.size(); i++) {
-                playFrom.add("播放列表" + (i + 1));
-            }
-           }else{
-           
-           boolean xlshifouercijiequ = getRuleVal("xlshifouercijiequ").equals("1");
-            if (xlshifouercijiequ) {
-                String xljiequqian = getRuleVal("xljiequqian");
-                String xljiequhou = getRuleVal("xljiequhou");
-                xlparseContent = subContent(html, xljiequqian, xljiequhou).get(0);
-            }
-            
-            String xljiequshuzuqian = getRuleVal("xljiequshuzuqian");
-            String xljiequshuzuhou = getRuleVal("xljiequshuzuhou");
-            ArrayList<String> xljiequContents = subContent(xlparseContent, xljiequshuzuqian, xljiequshuzuhou);
-            for (int i = 0; i < playList.size(); i++) {
-                try {
-                     String xltitle = subContent(xljiequContents.get(i), getRuleVal("xlbiaotiqian"), getRuleVal("xlbiaotihou")).get(0);                     
-                     playFrom.add(xltitle);
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                    break;
-                }
-            }           
-           
-           }
 
             String cover = idInfo[1], title = idInfo[0], area = "";
             String director = "";
@@ -291,7 +259,13 @@ public class XBiubiu extends Spider {
             vod.put("vod_actor", actor);
             vod.put("vod_director", director);
             vod.put("vod_content", desc);
-           
+
+            ArrayList<String> playFrom = new ArrayList<>();
+
+            for (int i = 0; i < playList.size(); i++) {
+                playFrom.add("播放列表" + (i + 1));
+            }
+
             String vod_play_from = TextUtils.join("$$$", playFrom);
             String vod_play_url = TextUtils.join("$$$", playList);
             vod.put("vod_play_from", vod_play_from);
@@ -369,19 +343,11 @@ public class XBiubiu extends Spider {
                         String pic = subContent(jiequContent, getRuleVal("sstupianqian"), getRuleVal("sstupianhou")).get(0);
                         pic = Misc.fixUrl(webUrl, pic);
                         String link = subContent(jiequContent, getRuleVal("sslianjieqian"), getRuleVal("sslianjiehou")).get(0);
-                        String mark = "";
-                if (!getRuleVal("ssfubiaotiqian").isEmpty() && !getRuleVal("ssfubiaotihou").isEmpty()) {
-                    try {
-                        mark = subContent(jiequContent, getRuleVal("ssfubiaotiqian"), getRuleVal("ssfubiaotihou")).get(0).replaceAll("\\s+", "").replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll("<[^>]*>", "").replaceAll("[(/>)<]", "");
-                    } catch (Exception e) {
-                        SpiderDebug.log(e);
-                    }
-                }
                         JSONObject v = new JSONObject();
                         v.put("vod_id", title + "$$$" + pic + "$$$" + link);
                         v.put("vod_name", title);
                         v.put("vod_pic", pic);
-                        v.put("vod_remarks", mark);
+                        v.put("vod_remarks", "");
                         videos.put(v);
                     } catch (Throwable th) {
                         th.printStackTrace();

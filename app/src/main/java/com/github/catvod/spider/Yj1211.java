@@ -319,7 +319,7 @@ public class Yj1211 extends Spider {
                 playList = "NoStream$nolink";
 
             Map<String, String> vod_play = new TreeMap<>();
-            vod_play.put("YJ1211", playList);
+            vod_play.put("DweiTV", playList);
             String vod_play_from = TextUtils.join("$$$", vod_play.keySet());
             String vod_play_url = TextUtils.join("$$$", vod_play.values());
             vodList.put("vod_play_from", vod_play_from);

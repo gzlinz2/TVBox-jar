@@ -138,7 +138,7 @@ public class XPbd extends XPath {
                     JSONObject result = new JSONObject();
                     JSONArray lists = new JSONArray();
                     vodAtom.put("vod_id", id);
-                    vodAtom.put("vod_play_from", "磁力测试");
+                    vodAtom.put("vod_play_from", "哔嘀磁力");
                     vodAtom.put("vod_play_url", "网站没资源$" + id);
                     lists.put(vodAtom);
                     result.put("list", lists);

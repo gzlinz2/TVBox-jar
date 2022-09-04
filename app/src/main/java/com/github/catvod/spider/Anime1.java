@@ -342,11 +342,35 @@ public class Anime1 extends Spider {
                     try {
                         JSONObject obj = new JSONObject(respbody);
                         JSONArray objarray = obj.getJSONArray("s");
-                        JSONObject obj2 = objarray.getJSONObject(0);
-                        String videolink = obj2.getString("src");
-                        authority = videolink.split("/")[2];
-						videolink = "https:" + videolink;
-		                result.put("url", videolink);
+                        String m3u8url="";
+                        String mp4url="";
+                        for(int i=0 ; i< objarray.length();i++){
+                            JSONObject obj2 = objarray.getJSONObject(i);
+                            String m3u8chk = obj2.getString("src");
+                            if(m3u8chk.contains("m3u8")){
+                               m3u8url = m3u8chk;
+                            }else{
+                               mp4url = m3u8chk;
+                            }
+                        }
+                        String videolink ="";
+                        if(m3u8url.length()>0){
+                            authority = m3u8url.split("/")[2];
+                            videolink = "https:" + m3u8url;
+                            String docm3u8 = OkHttpUtil.string(videolink, getHeaders1(videolink));
+                            if(docm3u8.contains("1080p.m3u8")){
+                                videolink = videolink.replace("playlist","1080p");
+                            } else if(docm3u8.contains("720p.m3u8")){
+                                videolink = videolink.replace("playlist","720p");
+                            } else{
+                                authority = mp4url.split("/")[2];
+                                videolink = "https:" + mp4url;
+                            }
+                        }else{
+                            authority = mp4url.split("/")[2];
+                            videolink = "https:" + mp4url;
+                        }
+                        result.put("url", videolink);
                     } catch (JSONException unused) {
                     }
                 }

@@ -2,10 +2,10 @@ package com.github.catvod.spider;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Base64;
 
 import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.utils.okhttp.OKCallBack;
 import com.github.catvod.utils.okhttp.OkHttpUtil;
 
 import org.json.JSONArray;
@@ -17,12 +17,24 @@ import org.jsoup.nodes.Document;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.Iterator;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 public class Bili extends Spider {
 
     protected JSONObject ext = null;
+    protected static String siteUrl = "https://www.bilibili.com";
+    protected static String sitHost = "www.bilibili.com";
 
     @Override
     public void init(Context context, String extend) {
@@ -49,13 +61,47 @@ public class Bili extends Spider {
         return results.toString();
     }
 
+    public static String cookie = "";
+    public static String getCookie(){
+        if(cookie.isEmpty()){
+            OKCallBack.OKCallBackDefault callBack = new OKCallBack.OKCallBackDefault() {
+                @Override
+                protected void onFailure(Call call, Exception e) {
+
+                }
+
+                @Override
+                protected void onResponse(Response response) {
+
+                }
+            };
+            OkHttpUtil.get(OkHttpUtil.defaultClient(),siteUrl,callBack);
+            List<Cookie> cookies = OkHttpUtil.cookieStore.get(sitHost);
+            cookie = TextUtils.join(";",cookies);
+        }
+        return cookie;
+    }
+
+    protected static HashMap<String, String> CookieHeaders() {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36");
+        headers.put("Cookie", getCookie());
+        return headers;
+    }
+
+
     @Override
     public String homeVideoContent() {
         try {
             JSONArray videos = new JSONArray();
             try {
                 String url = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=窗 白噪音";
-                String content = OkHttpUtil.string(url, null);
+                String content = OkHttpUtil.string(url, CookieHeaders());
+                int code = new JSONObject(content).getInt("code");
+                if(code != 0){
+                    cookie = "";
+                    content = OkHttpUtil.string(url, CookieHeaders());
+                }
                 JSONObject data = new JSONObject(content).getJSONObject("data");
                 JSONArray RArray = data.getJSONArray("result");
                 for (int i = 0; i < RArray.length(); i++) {
@@ -108,7 +154,12 @@ public class Bili extends Spider {
                 }
             }
             url += "&page=" + pg;
-            String content = OkHttpUtil.string(url, null);
+            String content = OkHttpUtil.string(url, CookieHeaders());
+            int code = new JSONObject(content).getInt("code");
+            if(code != 0){
+                cookie = "";
+                content = OkHttpUtil.string(url, CookieHeaders());
+            }
             JSONObject data = new JSONObject(content).getJSONObject("data");
             JSONArray list = new JSONArray();
             JSONArray RSArray = data.getJSONArray("result");
@@ -240,7 +291,8 @@ public class Bili extends Spider {
         try {
             JSONObject result = new JSONObject();
             String url = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=" + URLEncoder.encode(key);
-            String content = OkHttpUtil.string(url, null);
+         //   String content = OkHttpUtil.string(url, null);
+            String content = OkHttpUtil.string(url, CookieHeaders());
             JSONObject data = new JSONObject(content).getJSONObject("data");
             JSONArray videos = new JSONArray();
             JSONArray RSArray = data.getJSONArray("result");

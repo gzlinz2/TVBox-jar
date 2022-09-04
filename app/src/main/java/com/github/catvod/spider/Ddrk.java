@@ -376,9 +376,9 @@ public class Ddrk extends Spider {
                 JSONArray Track = UJson.getJSONArray("tracks");
                 for (int k = 0; k < Track.length(); k++) {
                     JSONObject src = Track.getJSONObject(k);
-                    String adk = src.getString("src0");
+                    String adk = src.getString("src1");
                     String vodName = src.getString("caption");
-                    String playURL = adk;
+                    String playURL = "https://ddys.tv/getvddr/video?id=" + adk + "&type=mix";
                     String zm = "https://ddys.tv/subddr/" + src.getString("subsrc");
                     String pzm = playURL + "|" + zm;
                     vodItems.add(vodName + "$" + pzm);
@@ -402,9 +402,9 @@ public class Ddrk extends Spider {
                         JSONArray Track = UJson.getJSONArray("tracks");
                         for (int k = 0; k < Track.length(); k++) {
                             JSONObject src = Track.getJSONObject(k);
-                            String adk = src.getString("src0");
+                            String adk = src.getString("src1");
                             String vodName = src.getString("caption");
-                            String playURL = adk;
+                            String playURL = "https://ddys.tv/getvddr/video?id=" + adk + "&type=mix";
                             String zm = "https://ddys.tv/subddr/" + src.getString("subsrc");
                             String pzm = playURL + "|" + zm;
                             vodItems2.add(vodName + "$" + pzm);
@@ -500,27 +500,19 @@ public class Ddrk extends Spider {
             String playUrl = item[0];
             String ZiMu = item[1];
 
-
-            JSONObject pinjie = new JSONObject();
-            pinjie.put("path",playUrl.replace("\\/", "/"));
-            pinjie.put("expire", System.currentTimeMillis() + 600000L);
-
-            String ids=URLEncoder.encode(AES.CBCEncrypt(pinjie.toString(), "gh3Zalc874hD7fcV", "1529076118276120"));
-            String str5 ="https://ddys.tv/getvddr/video?id="+ids+"&dim=1080P+&type=mix";
-            String content = OkHttpUtil.string(str5, getHeaders(str5));
-
-            JSONObject ss = new JSONObject(content);
-            String sn=ss.optString("url");
+            String content = OkHttpUtil.string(playUrl, getHeaders(playUrl));
+            JSONObject obj = new JSONObject(content);
+            String RealUrl = obj.optString("url");
             JSONObject result = new JSONObject();
             result.put("parse", 0);
             result.put("playUrl", "");
-            result.put("url", sn);
+            result.put("url", RealUrl);
             result.put("header", "");
-
+            //    if (!TextUtils.isEmpty(str4)) {
             result.put("subf", "/vtt/utf-8");
-//            result.put("subt", Proxy.localProxyUrl() + "?do=ddrk&url=" + URLEncoder.encode(ZiMu));
-
-
+            result.put("subt", Proxy.localProxyUrl() + "?do=ddrk&url=" + URLEncoder.encode(ZiMu));
+            //       result.put("subt", ZiMu);
+            //    }
             return result.toString();
         } catch (Exception e) {
             SpiderDebug.log(e);
@@ -528,13 +520,11 @@ public class Ddrk extends Spider {
         return "";
     }
 
-    public Ddrk() {
-    }
 
     @Override
     public String searchContent(String key, boolean quick) {
         try {
-            String url = "https://shitu.paodekuaiweixinqun.com/search?q=site%3Addys.tv+" + URLEncoder.encode(key);
+            String url = "https://www.google.com/search?q=site%3Addrk.me+" + URLEncoder.encode(key);
             Document doc = Jsoup.parse(OkHttpUtil.string(url, getHeaders(url)));
             JSONObject result = new JSONObject();
             JSONArray videos = new JSONArray();

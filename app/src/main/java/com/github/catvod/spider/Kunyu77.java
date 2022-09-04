@@ -24,7 +24,7 @@ import java.util.Set;
  * Author: @SDL
  */
 public class Kunyu77 extends Spider {
-    private static final String siteUrl = "http://api.kunyu77.com";
+    private static final String siteUrl = "https://clbky.kyky.vip";
 
     private String uAgent = "Dalvik/2.1.0 (Linux; U; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + " Build/" + Build.ID + ")";
 
@@ -37,9 +37,8 @@ public class Kunyu77 extends Spider {
     @Override
     public String homeContent(boolean filter) {
         try {
-            String url = siteUrl + "/api.php/provide/videoDetail?ids=" + ids.get(0);
-            String urlx="/api.php/provide/videoDetail" + ids.get(0);
-            String content = OkHttpUtil.string(url, getHeaders(urlx));
+            String url = siteUrl + "/api.php/provide/filter";
+            String content = OkHttpUtil.string(url, getHeaders(url));
             JSONObject jsonObject = new JSONObject(decryptResponse(content)).getJSONObject("data");
             Iterator<String> keys = jsonObject.keys();
             JSONArray classes = new JSONArray();

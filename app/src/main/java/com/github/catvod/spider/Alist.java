@@ -10,20 +10,47 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.Call;
 
 public class Alist extends Spider {
-    private String ext;
+    private JSONObject ext;
+    private String  siteName;
+    private final static JSONObject version = new JSONObject();
 
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> hashMap) {
         try {
-            String url = this.ext + "/api/public/path";
+            int index = tid.indexOf('$');
+            String name = tid.substring(0, index);
+            String path = tid.substring(index+1);
+            siteName = name;
+                try {
+                    if(!version.has(name) || version.getString(name).isEmpty()){
+                        String ver = "2";
+                        String url = this.ext.getString(name);
+                        String versionUrl = url + "/api/public/settings";
+                        String json = OkHttpUtil.string(versionUrl, null);
+                        String data = new JSONObject(json).optString("data");
+                        if (data.startsWith("{") && new JSONObject(data).getString("version").startsWith("v3.0")) ver = "3";
+                        version.put(name, ver);
+                    }
+                }catch (JSONException v){
+                    v.printStackTrace();
+                    version.put(name, "2");
+                }
+            String url;
+            if(version.getString(name).equals("3")){
+                url = this.ext.getString(name) + "/api/fs/list";
+            }else {
+                url = this.ext.getString(name) + "/api/public/path";
+            }
             JSONObject params = new JSONObject();
-            params.put("path", tid);
+            params.put("path", path);
 
             JSONArray jSONArray2 = new JSONArray();
             OkHttpUtil.postJson(OkHttpUtil.defaultClient(), url, params.toString(), new OKCallBack.OKCallBackString() {
@@ -36,11 +63,11 @@ public class Alist extends Spider {
                 protected void onResponse(String response) {
                     try {
                         JSONObject retval = new JSONObject(response);
-                        JSONArray list = retval.getJSONObject("data").getJSONArray("files");
+                        JSONArray list = retval.getJSONObject("data").getJSONArray(version.getString(siteName).equals("3")?"content":"files");
                         for (int i =0; i < list.length(); ++i){
                             JSONObject o = list.getJSONObject(i);
-                            String pic = o.getString("thumbnail");
-                            if(pic.isEmpty()){
+                            String pic = o.getString(version.getString(siteName).equals("3")?"thumb":"thumbnail");
+                            if(pic.isEmpty() && (o.getInt("type")==1) ){
                                 pic = "http://img1.3png.com/281e284a670865a71d91515866552b5f172b.png";
                             }
                             JSONObject jSONObject2 = new JSONObject();
@@ -48,7 +75,29 @@ public class Alist extends Spider {
                             jSONObject2.put("vod_name", o.getString("name"));
                             jSONObject2.put("vod_pic", pic);
                             jSONObject2.put("vod_tag",o.getInt("type")==1 ? "folder" : "file" );
-                            jSONObject2.put("vod_remarks", o.getInt("type")==1 ? "文件夹" : "文件");
+
+                            double sz = o.getLong("size");
+                            String filesize = "";
+                            if(sz > 1024*1024*1024*1024.0){
+                                sz /= (1024*1024*1024*1024.0);
+                                filesize = "TB";
+                            }
+                            else if(sz > 1024*1024*1024.0){
+                                sz /= (1024*1024*1024.0);
+                                filesize = "GB";
+                            }else if(sz > 1024*1024.0){
+                                sz /= (1024*1024.0);
+                                filesize = "MB";
+                            }else{
+                                sz /= 1024.0;
+                                filesize = "KB";
+                            }
+                            String remark ="";
+                            if(o.getLong("size") !=0){
+                                remark = String.format("%.2f%s", sz, filesize);
+                            }
+
+                            jSONObject2.put("vod_remarks", o.getInt("type")==1 ? remark + " 文件夹" : remark);
                             jSONArray2.put(jSONObject2);
 
                         }
@@ -74,10 +123,20 @@ public class Alist extends Spider {
     public String detailContent(List<String> ids) {
         try
         {
-            String filename = ids.get(0);
-            String url = this.ext + "/api/public/path";
+
+            String tid = ids.get(0);
+            int index = tid.indexOf('$');
+            String name = tid.substring(0, index);
+            String path = tid.substring(index+1);
+            String url;
+            if(version.getString(name).equals("3")){
+                url = this.ext.getString(name) + "/api/fs/get";
+            }else {
+                url = this.ext.getString(name) + "/api/public/path";
+            }
+
             JSONObject params = new JSONObject();
-            params.put("path", filename);
+            params.put("path", path);
 
             JSONObject result = new JSONObject();
             JSONArray list = new JSONArray();
@@ -92,23 +151,26 @@ public class Alist extends Spider {
                 protected void onResponse(String response) {
                     try {
                         JSONObject retval = new JSONObject(response);
-                        JSONArray files = retval.getJSONObject("data").getJSONArray("files");
-                        for (int i =0; i < files.length(); ++i){
-                            JSONObject o = files.getJSONObject(i);
-                            String url = o.getString("url");
-                            if(url.indexOf("//") ==0){
-                                url = "http:"+url;
-                            }
-                            JSONObject jSONObject2 = new JSONObject();
-                            jSONObject2.put("vod_id", filename + "/" + o.getString("name"));
-                            jSONObject2.put("vod_name", o.getString("name"));
-                            jSONObject2.put("vod_pic", o.getString("thumbnail"));
-                            jSONObject2.put("vod_tag",o.getInt("type")==1 ? "folder" : "file" );
-                            jSONObject2.put("vod_play_from", "播放");
-                            jSONObject2.put("vod_play_url", o.getString("name")+"$"+url);
-                            list.put(jSONObject2);
-
+                        JSONObject o;
+                        JSONObject data = retval.getJSONObject("data");
+                        if(data.has("files")){
+                            o=data.getJSONArray("files").getJSONObject(0);
+                        }else {
+                            o=data;
                         }
+                        String url = o.getString(o.has("raw_url")?"raw_url":"url");
+                        if(url.indexOf("//") == 0){
+                            url = "http:"+url;
+                        }
+                        JSONObject jSONObject2 = new JSONObject();
+                        jSONObject2.put("vod_id", tid + "/" + o.getString("name"));
+                        jSONObject2.put("vod_name", o.getString("name"));
+                        jSONObject2.put("vod_pic", o.getString(o.has("thumbnail")?"thumbnail":"thumb"));
+                        jSONObject2.put("vod_tag",o.getInt("type") == 1 ? "folder" : "file" );
+                        jSONObject2.put("vod_play_from", siteName);
+                        jSONObject2.put("vod_play_url", o.getString("name")+"$"+url);
+                        list.put(jSONObject2);
+
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -126,24 +188,18 @@ public class Alist extends Spider {
     }
 
 
-    String fileTime(long time, String fmt) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(time);
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat(fmt);
-        return sdf.format(date);
-    }
-
     public String homeContent(boolean z) {
         try {
             JSONArray classes = new JSONArray();
-            JSONObject newCls = new JSONObject();
-            newCls.put("type_id", "/");
-            newCls.put("type_name", "Alist");
-            newCls.put("type_flag", "1"); // 1 列表形式的文件夹 2 缩略图 0 或者不存在 表示正常
-            classes.put(newCls);
-
-            JSONArray jSONArray3 = new JSONArray();
+            Iterator<String> keys = this.ext.keys();
+            while (keys.hasNext()) {
+                String k = keys.next();
+                JSONObject newCls = new JSONObject();
+                newCls.put("type_id", k+"$/"); // 使用$来分割站点名称+path
+                newCls.put("type_name", k);
+                newCls.put("type_flag", "1"); // 1 列表形式的文件夹 2 缩略图 0 或者不存在 表示正常
+                classes.put(newCls);
+            }
 
             JSONObject jSONObject4 = new JSONObject();
             jSONObject4.put("class", classes);
@@ -159,7 +215,25 @@ public class Alist extends Spider {
 
     public void init(Context context, String ext){
         Alist.super.init(context);
-        this.ext = ext;
+        try {
+            if(ext.startsWith("http")){
+                this.ext = new JSONObject(OkHttpUtil.string(ext,null));
+            }else {
+                this.ext = new JSONObject();
+                String vec[] = ext.split("#");
+                for (int i =0; i < vec.length; ++i){
+                    String arr[] = vec[i].split("\\$");
+                    if(arr.length ==1){
+                        this.ext.put("alist", arr[0]);
+                    } else if(arr.length == 2) {
+                        this.ext.put(arr[0], arr[1]);
+                    }
+                }
+            }
+
+        } catch (JSONException jsonException) {
+            jsonException.printStackTrace();
+        }
     }
 
     public String playerContent(String str, String str2, List<String> list) {
